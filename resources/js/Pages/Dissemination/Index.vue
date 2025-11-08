@@ -66,7 +66,7 @@
               </h4>
               <p class="text-sm text-slate-600 mb-3">{{ viz.description || 'Tidak ada deskripsi' }}</p>
               <div class="text-xs text-slate-500">
-                {{ viz.wordcloud_data.length }} kata
+                {{ viz.word_cloud_data.length }} kata
               </div>
             </div>
           </Link>

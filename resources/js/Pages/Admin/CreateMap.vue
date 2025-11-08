@@ -74,18 +74,19 @@
         <div class="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 class="font-semibold text-blue-900 mb-3">Format Excel yang Diperlukan:</h3>
           <table class="text-sm text-blue-900 w-full">
-            <tr>
-              <td class="font-mono font-bold">Kolom 1:</td>
-              <td class="pl-4">ID Daerah (misalnya: 1, 2, 3)</td>
-            </tr>
-            <tr>
-              <td class="font-mono font-bold">Kolom 2:</td>
-              <td class="pl-4">Nama Daerah (misalnya: Sleman, Bantul)</td>
-            </tr>
-            <tr>
-              <td class="font-mono font-bold">Kolom 3+:</td>
-              <td class="pl-4">Variabel survei (bisa lebih dari satu)</td>
-            </tr>
+            <tbody> <tr>
+                <td class="font-mono font-bold">Kolom 1:</td>
+                <td class="pl-4">ID Daerah (misalnya: 1, 2, 3)</td>
+              </tr>
+              <tr>
+                <td class="font-mono font-bold">Kolom 2:</td>
+                <td class="pl-4">Nama Daerah (misalnya: Sleman, Bantul)</td>
+              </tr>
+              <tr>
+                <td class="font-mono font-bold">Kolom 3+:</td>
+                <td class="pl-4">Variabel survei (bisa lebih dari satu)</td>
+              </tr>
+            </tbody> 
           </table>
           <p class="text-xs text-blue-800 mt-3">Contoh: ID=1, Nama=Sleman, Pendapatan=500000, Pendidikan=85</p>
         </div>

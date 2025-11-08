@@ -57,7 +57,7 @@
             <tr v-for="viz in visualizations" :key="viz.id" class="hover:bg-slate-50">
               <td class="px-6 py-4 text-sm font-medium text-slate-900">{{ viz.name }}</td>
               <td class="px-6 py-4 text-sm text-slate-600">{{ viz.description || '-' }}</td>
-              <td class="px-6 py-4 text-sm text-slate-600">{{ viz.wordcloud_data.length }}</td>
+              <td class="px-6 py-4 text-sm text-slate-600">{{ viz.word_cloud_data.length }}</td>
               <td class="px-6 py-4 text-sm space-x-2">
                 <Link 
                   :href="`/admin/wordcloud/${viz.id}/edit`"
