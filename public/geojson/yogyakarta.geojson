@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "1",
+        "name": "Sleman"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.2, -7.6], [110.45, -7.6], [110.45, -7.45], [110.2, -7.45], [110.2, -7.6]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "2",
+        "name": "Bantul"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.2, -7.75], [110.45, -7.75], [110.45, -7.6], [110.2, -7.6], [110.2, -7.75]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "3",
+        "name": "Gunungkidul"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.3, -7.9], [110.55, -7.9], [110.55, -7.75], [110.3, -7.75], [110.3, -7.9]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "4",
+        "name": "Kulon Progo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.0, -7.65], [110.25, -7.65], [110.25, -7.5], [110.0, -7.5], [110.0, -7.65]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "5",
+        "name": "Yogyakarta Kota"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.3, -7.8], [110.45, -7.8], [110.45, -7.65], [110.3, -7.65], [110.3, -7.8]]]
+      }
+    }
+  ]
+}
