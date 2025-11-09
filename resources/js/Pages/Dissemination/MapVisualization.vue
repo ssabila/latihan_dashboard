@@ -168,10 +168,21 @@ const loadMapData = async () => {
 
 const renderMap = async () => {
   try {
+    const targetUrl = `/geojson/${props.visualization.geojson_file}.geojson`;
+    console.log('MEMBACA GEOJSON DARI URL:', targetUrl);
+
     const geoJsonResponse = await fetch(
-      `/api/visualizations/geojson/${props.visualization.geojson_file}`
+      `/geojson/${props.visualization.geojson_file}.geojson`
     );
+
+    if (!geoJsonResponse.ok) {
+      console.error('Failed to load GeoJSON:', geoJsonResponse.status);
+      return;
+    }
+
     const geoJsonData = await geoJsonResponse.json();
+    console.log('GeoJSON loaded:', geoJsonData);
+    console.log('Map data:', mapData.value);
 
     // Remove existing layers
     map.value.eachLayer((layer) => {
