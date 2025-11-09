@@ -40,33 +40,48 @@
 
       <!-- Legend -->
       <div v-if="selectedVariable && mapData.length > 0" class="bg-white rounded-lg shadow p-6 mt-8">
-        <h3 class="font-bold text-slate-900 mb-4">Legend</h3>
+        <h3 class="font-bold text-slate-900 mb-4">Legend - {{ selectedVariable }}</h3>
         <div class="flex gap-2 flex-wrap">
           <div v-for="(color, index) in colorLegend" :key="index" class="flex items-center gap-2">
             <div 
-              class="w-6 h-6 rounded"
+              class="w-6 h-6 rounded border border-slate-300"
               :style="{ backgroundColor: color }"
             ></div>
             <span class="text-sm text-slate-600">{{ colorLabels[index] }}</span>
           </div>
         </div>
+        
+        <!-- Interpretasi -->
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 class="font-semibold text-blue-900 mb-2">📊 Interpretasi Data</h4>
+          <p class="text-sm text-blue-800">{{ interpretation }}</p>
+        </div>
       </div>
 
       <!-- Info Table -->
       <div v-if="selectedVariable && mapData.length > 0" class="bg-white rounded-lg shadow p-6 mt-8">
-        <h3 class="font-bold text-slate-900 mb-4">Data Detail</h3>
+        <h3 class="font-bold text-slate-900 mb-4">Data Detail - {{ selectedVariable }}</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="bg-slate-100 border-b border-slate-200">
               <tr>
                 <th class="px-4 py-2 text-left">Daerah</th>
                 <th class="px-4 py-2 text-right">{{ selectedVariable }}</th>
+                <th class="px-4 py-2 text-left">Kategori</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
-              <tr v-for="data in mapData" :key="data.region_id" class="hover:bg-slate-50">
+              <tr v-for="data in sortedMapData" :key="data.region_id" class="hover:bg-slate-50">
                 <td class="px-4 py-2">{{ data.region_name }}</td>
-                <td class="px-4 py-2 text-right font-mono">{{ data.variable_value.toFixed(2) }}</td>
+                <td class="px-4 py-2 text-right font-mono">{{ formatNumber(data.variable_value) }}</td>
+                <td class="px-4 py-2">
+                  <span 
+                    class="px-2 py-1 text-xs rounded-full"
+                    :class="getCategoryClass(data.variable_value)"
+                  >
+                    {{ getCategory(data.variable_value) }}
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -77,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import L from 'leaflet';
 
@@ -91,6 +106,22 @@ const mapData = ref([]);
 const map = ref(null);
 const colorLegend = ref([]);
 const colorLabels = ref([]);
+const minValue = ref(0);
+const maxValue = ref(0);
+
+const sortedMapData = computed(() => {
+  return [...mapData.value].sort((a, b) => b.variable_value - a.variable_value);
+});
+
+const interpretation = computed(() => {
+  if (mapData.value.length === 0) return '';
+  
+  const highest = sortedMapData.value[0];
+  const lowest = sortedMapData.value[sortedMapData.value.length - 1];
+  const average = mapData.value.reduce((sum, d) => sum + d.variable_value, 0) / mapData.value.length;
+  
+  return `Berdasarkan data ${selectedVariable.value}, daerah ${highest.region_name} memiliki nilai tertinggi (${formatNumber(highest.variable_value)}), sedangkan ${lowest.region_name} memiliki nilai terendah (${formatNumber(lowest.variable_value)}). Rata-rata nilai untuk seluruh daerah adalah ${formatNumber(average)}.`;
+});
 
 onMounted(async () => {
   // Inisialisasi map
@@ -151,8 +182,8 @@ const renderMap = async () => {
 
     // Calculate min/max values
     const values = mapData.value.map(d => d.variable_value);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
+    minValue.value = Math.min(...values);
+    maxValue.value = Math.max(...values);
 
     // Create data map
     const dataMap = {};
@@ -163,22 +194,22 @@ const renderMap = async () => {
     // Color function
     const getColor = (value) => {
       if (value === undefined) return '#cccccc';
-      const ratio = (value - minValue) / (maxValue - minValue);
-      if (ratio < 0.2) return '#ffffcc';
-      if (ratio < 0.4) return '#c2e699';
-      if (ratio < 0.6) return '#78c679';
-      if (ratio < 0.8) return '#31a354';
-      return '#006837';
+      const ratio = (value - minValue.value) / (maxValue.value - minValue.value);
+      if (ratio < 0.2) return '#fee5d9';
+      if (ratio < 0.4) return '#fcae91';
+      if (ratio < 0.6) return '#fb6a4a';
+      if (ratio < 0.8) return '#de2d26';
+      return '#a50f15';
     };
 
     // Generate legend
-    colorLegend.value = ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837'];
+    colorLegend.value = ['#fee5d9', '#fcae91', '#fb6a4a', '#de2d26', '#a50f15'];
     colorLabels.value = [
-      `${minValue.toFixed(0)} - ${(minValue + (maxValue - minValue) * 0.2).toFixed(0)}`,
-      `${(minValue + (maxValue - minValue) * 0.2).toFixed(0)} - ${(minValue + (maxValue - minValue) * 0.4).toFixed(0)}`,
-      `${(minValue + (maxValue - minValue) * 0.4).toFixed(0)} - ${(minValue + (maxValue - minValue) * 0.6).toFixed(0)}`,
-      `${(minValue + (maxValue - minValue) * 0.6).toFixed(0)} - ${(minValue + (maxValue - minValue) * 0.8).toFixed(0)}`,
-      `${(minValue + (maxValue - minValue) * 0.8).toFixed(0)} - ${maxValue.toFixed(0)}`,
+      `Sangat Rendah (${formatNumber(minValue.value)} - ${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.2)})`,
+      `Rendah (${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.2)} - ${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.4)})`,
+      `Sedang (${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.4)} - ${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.6)})`,
+      `Tinggi (${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.6)} - ${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.8)})`,
+      `Sangat Tinggi (${formatNumber(minValue.value + (maxValue.value - minValue.value) * 0.8)} - ${formatNumber(maxValue.value)})`,
     ];
 
     // Add GeoJSON layer
@@ -195,13 +226,41 @@ const renderMap = async () => {
       },
       onEachFeature: (feature, layer) => {
         const data = dataMap[feature.properties.id];
-        let popupText = `<strong>${feature.properties.name}</strong><br/>`;
+        let popupText = `<div class="p-2">
+          <strong class="text-lg">${feature.properties.name}</strong><br/>`;
+        
         if (data) {
-          popupText += `${selectedVariable.value}: ${data.variable_value.toFixed(2)}`;
+          popupText += `
+            <div class="mt-2">
+              <span class="font-semibold">${selectedVariable.value}:</span> ${formatNumber(data.variable_value)}<br/>
+              <span class="text-sm text-slate-600">Kategori: ${getCategory(data.variable_value)}</span>
+            </div>`;
         } else {
-          popupText += 'Tidak ada data';
+          popupText += '<span class="text-red-600">Tidak ada data</span>';
         }
+        popupText += '</div>';
+        
         layer.bindPopup(popupText);
+        
+        // Hover effect
+        layer.on({
+          mouseover: (e) => {
+            const layer = e.target;
+            layer.setStyle({
+              weight: 3,
+              color: '#666',
+              fillOpacity: 0.9
+            });
+          },
+          mouseout: (e) => {
+            const layer = e.target;
+            layer.setStyle({
+              weight: 2,
+              color: '#333',
+              fillOpacity: 0.7
+            });
+          }
+        });
       },
     }).addTo(map.value);
   } catch (error) {
@@ -209,15 +268,35 @@ const renderMap = async () => {
   }
 };
 
-watch(selectedVariable, () => {
-  if (selectedVariable.value) {
-    loadMapData();
-  }
-});
+const getCategory = (value) => {
+  const ratio = (value - minValue.value) / (maxValue.value - minValue.value);
+  if (ratio < 0.2) return 'Sangat Rendah';
+  if (ratio < 0.4) return 'Rendah';
+  if (ratio < 0.6) return 'Sedang';
+  if (ratio < 0.8) return 'Tinggi';
+  return 'Sangat Tinggi';
+};
+
+const getCategoryClass = (value) => {
+  const ratio = (value - minValue.value) / (maxValue.value - minValue.value);
+  if (ratio < 0.2) return 'bg-red-100 text-red-800';
+  if (ratio < 0.4) return 'bg-orange-100 text-orange-800';
+  if (ratio < 0.6) return 'bg-yellow-100 text-yellow-800';
+  if (ratio < 0.8) return 'bg-green-100 text-green-800';
+  return 'bg-blue-100 text-blue-800';
+};
+
+const formatNumber = (num) => {
+  return new Intl.NumberFormat('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(num);
+};
 </script>
 
 <style scoped>
 #map {
   position: relative;
+  z-index: 0;
 }
 </style>

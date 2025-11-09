@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VisualizationController;
+use App\Models\Visualization;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-// Admin Routes
+// Admin Routes (tanpa autentikasi untuk sementara)
 Route::prefix('admin')->name('admin.')->group(function () {
     // Map Routes
     Route::prefix('map')->name('map.')->group(function () {
@@ -17,6 +18,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/', [VisualizationController::class, 'storeMap'])->name('store');
         Route::get('/{visualization}/edit', [VisualizationController::class, 'editMap'])->name('edit');
         Route::put('/{visualization}', [VisualizationController::class, 'updateMap'])->name('update');
+        Route::post('/{visualization}', [VisualizationController::class, 'updateMap'])->name('update.post');
         Route::delete('/{visualization}', [VisualizationController::class, 'deleteMap'])->name('delete');
     });
 
@@ -35,25 +37,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('diseminasi')->name('diseminasi.')->group(function () {
     Route::get('/', function () {
         return Inertia::render('Dissemination/Index', [
-            'mapVisualizations' => \App\Models\Visualization::where('type', 'map')->with('mapData')->get(),
-            'wordcloudVisualizations' => \App\Models\Visualization::where('type', 'wordcloud')->with('wordCloudData')->get(),
+            'mapVisualizations' => Visualization::where('type', 'map')
+                ->with('mapData')
+                ->get(),
+            'wordcloudVisualizations' => Visualization::where('type', 'wordcloud')
+                ->with('wordCloudData')
+                ->get(),
         ]);
     })->name('index');
 
-    Route::get('/map/{visualization}', function (\App\Models\Visualization $visualization) {
+    Route::get('/map/{visualization}', function (Visualization $visualization) {
         if ($visualization->type !== 'map') abort(404);
-        return Inertia::render('Dissemination/MapVisualization', ['visualization' => $visualization]);
+        
+        return Inertia::render('Dissemination/MapVisualization', [
+            'visualization' => $visualization->load('mapData')
+        ]);
     })->name('map');
 
-    // routes/web.php
-Route::get('/wordcloud/{visualization}', function (\App\Models\Visualization $visualization) {
-    if ($visualization->type !== 'wordcloud') abort(404);
-
-
-    $visualization->load('wordCloudData'); 
-
-    return Inertia::render('Dissemination/WordCloudVisualization', [
-        'visualization' => $visualization
-    ]);
-})->name('wordcloud');
+    Route::get('/wordcloud/{visualization}', function (Visualization $visualization) {
+        if ($visualization->type !== 'wordcloud') abort(404);
+        
+        return Inertia::render('Dissemination/WordCloudVisualization', [
+            'visualization' => $visualization->load('wordCloudData')
+        ]);
+    })->name('wordcloud');
 });
