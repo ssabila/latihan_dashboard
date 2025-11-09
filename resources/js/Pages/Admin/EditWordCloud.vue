@@ -104,7 +104,7 @@ const processing = ref(false);
 const form = useForm({
   name: props.visualization.name,
   description: props.visualization.description || '',
-  words: props.visualization.wordcloud_data.map(w => ({ word: w.word, value: w.value })),
+  words: props.visualization.word_cloud_data.map(w => ({ word: w.word, value: w.value })),
 });
 
 const addWord = () => {

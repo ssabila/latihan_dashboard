@@ -45,8 +45,15 @@ Route::prefix('diseminasi')->name('diseminasi.')->group(function () {
         return Inertia::render('Dissemination/MapVisualization', ['visualization' => $visualization]);
     })->name('map');
 
-    Route::get('/wordcloud/{visualization}', function (\App\Models\Visualization $visualization) {
-        if ($visualization->type !== 'wordcloud') abort(404);
-        return Inertia::render('Dissemination/WordCloudVisualization', ['visualization' => $visualization]);
-    })->name('wordcloud');
+    // routes/web.php
+Route::get('/wordcloud/{visualization}', function (\App\Models\Visualization $visualization) {
+    if ($visualization->type !== 'wordcloud') abort(404);
+
+
+    $visualization->load('wordCloudData'); 
+
+    return Inertia::render('Dissemination/WordCloudVisualization', [
+        'visualization' => $visualization
+    ]);
+})->name('wordcloud');
 });
