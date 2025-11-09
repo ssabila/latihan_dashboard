@@ -23,6 +23,11 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['vue', '@inertiajs/vue3', 'axios'],
+    include: ['vue', '@inertiajs/vue3', 'axios', 'leaflet', 'echarts', 'vue-echarts'],
+  },
+  server: {
+    hmr: {
+      host: 'localhost',
+    },
   },
 })

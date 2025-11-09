@@ -3,9 +3,16 @@ export default {
   content: [
     './resources/views/**/*.blade.php',
     './resources/js/**/*.vue',
+    './resources/js/**/*.js',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
