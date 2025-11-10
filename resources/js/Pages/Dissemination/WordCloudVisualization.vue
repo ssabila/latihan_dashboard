@@ -88,14 +88,16 @@
 </template>
 
 <script setup>
+
 import { computed, provide } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import { TooltipComponent } from 'echarts/components'; // <-- 1. TAMBAHKAN BARIS INI
 import 'echarts-wordcloud';
 import VChart, { THEME_KEY } from 'vue-echarts';
 
-use([CanvasRenderer]);
+use([CanvasRenderer, TooltipComponent]); // <-- 2. TAMBAHKAN TooltipComponent DI SINI
 provide(THEME_KEY, 'light');
 
 const props = defineProps({
